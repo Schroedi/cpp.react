@@ -13,8 +13,17 @@
 
 #include <utility>
 
-#include <chrono>
+#if _WIN32 || _WIN64
+    #define REACT_FIXME_CUSTOM_TIMER 1
+#else
+    #define REACT_FIXME_CUSTOM_TIMER 0
+#endif
 
+#if REACT_FIXME_CUSTOM_TIMER
+    #include <windows.h>
+#else
+    #include <chrono>
+#endif
 
 /***************************************/ REACT_IMPL_BEGIN /**************************************/
 
@@ -22,6 +31,21 @@
 /// GetPerformanceFrequency
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Todo: Initialization not thread-safe
+#if REACT_FIXME_CUSTOM_TIMER
+inline const LARGE_INTEGER& GetPerformanceFrequency()
+{
+    static bool init = false;
+    static LARGE_INTEGER frequency;
+
+    if (init == false)
+    {
+        QueryPerformanceFrequency(&frequency);
+        init = true;
+    }
+
+    return frequency;
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /// ConditionalTimer
