@@ -13,11 +13,7 @@
 
 #include <utility>
 
-#if _WIN32 || _WIN64
-    #define REACT_FIXME_CUSTOM_TIMER 1
-#else
-    #define REACT_FIXME_CUSTOM_TIMER 0
-#endif
+#define REACT_FIXME_CUSTOM_TIMER 0
 
 #if REACT_FIXME_CUSTOM_TIMER
     #include <windows.h>

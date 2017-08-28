@@ -8,7 +8,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wpedantic")
+set (CMAKE_CXX_STANDARD 14) 
+if (NOT WIN32) 
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wpedantic") 
+endif () 
 
 include_directories ("${PROJECT_SOURCE_DIR}/include")
 
@@ -23,22 +26,23 @@ add_library(CppReact
         src/logging/EventRecords.cpp
         ${CPPREACT_HEADERS})
 
-target_link_libraries(CppReact tbb)
+find_package(TBB REQUIRED tbb)
+target_link_libraries(CppReact ${TBB_IMPORTED_TARGETS})
 
 ### examples/ 
-option(build_examples "Build examples?" ON)
+option(build_examples "Build examples?" OFF)
 if(build_examples)
 	add_subdirectory(examples)
 endif()
 
 ### benchmarks/ 
-option(build_benchmarks "Build benchmarks?" ON)
+option(build_benchmarks "Build benchmarks?" OFF)
 if(build_benchmarks)
 	add_subdirectory(benchmarks)
 endif()
 
 ### tests/ 
-option(build_tests "Build unit tests?" ON)
+option(build_tests "Build unit tests?" OFF)
 if(build_tests)
 	add_subdirectory(tests)
 endif()
