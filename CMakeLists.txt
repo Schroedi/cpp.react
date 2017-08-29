@@ -26,8 +26,12 @@ add_library(CppReact
         src/logging/EventRecords.cpp
         ${CPPREACT_HEADERS})
 
-find_package(TBB REQUIRED tbb)
-target_link_libraries(CppReact ${TBB_IMPORTED_TARGETS})
+if (WIN32)
+	find_package(TBB REQUIRED tbb)
+	target_link_libraries(CppReact ${TBB_IMPORTED_TARGETS})
+else()
+	target_link_libraries(CppReact tbb)
+endif()
 
 ### examples/ 
 option(build_examples "Build examples?" OFF)
