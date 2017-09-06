@@ -65,6 +65,8 @@ void SeqEngineBase::Propagate(SeqTurn& turn)
 {
     while (scheduledNodes_.FetchNext())
     {
+        // sometimes it crashes here when we use dotransaction
+        // scheduledNodes_.NextValues() is null then I guess
         for (auto* curNode : scheduledNodes_.NextValues())
         {
             if (curNode->Level < curNode->NewLevel)
