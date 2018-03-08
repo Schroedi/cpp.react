@@ -23,6 +23,10 @@
 #include "react/engine/SubtreeEngine.h"
 #include "react/engine/ToposortEngine.h"
 
+#ifdef REACT_ENABLE_LOGGING
+#include "react/logging/EventLog.h"
+#endif
+
 /*****************************************/ REACT_BEGIN /*****************************************/
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +79,7 @@ template <typename D, typename TPolicy>
 class DomainBase
 {
 public:
+    using NodeT = typename TPolicy::Engine::NodeT;
     using TurnT = typename TPolicy::Engine::TurnT;
 
     DomainBase() = delete;
@@ -119,6 +124,12 @@ public:
     ///////////////////////////////////////////////////////////////////////////////////////////////
     /// Log
     ///////////////////////////////////////////////////////////////////////////////////////////////
+
+public:
+    static void SetNodeName(const NodeT& node, const std::string name) {
+        Log().SetNodeName(GetObjectId(node), name);
+    }
+
     static EventLog& Log()
     {
         static EventLog instance;

@@ -101,7 +101,7 @@ public:
         nodePtr_->SetWeightHint(weight);
     }
 
-private:
+public:
     // Owned by subject
     NodeT*          nodePtr_;
 

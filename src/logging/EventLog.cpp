@@ -70,6 +70,9 @@ void EventLog::Print()
 
 void EventLog::Write(std::ostream& out)
 {
+    for (auto& e : NodeNames)
+        out << "NodeName : " << e.first << " = " << e.second << std::endl;
+
     for (auto& e : entries_)
         e.Serialize(out, startTime_);
 }
@@ -79,6 +82,11 @@ void EventLog::Clear()
     for (auto& e : entries_)
         e.Release();
     entries_.clear();
+}
+
+void EventLog::SetNodeName(const ObjectId objectId, const std::string name) {
+    std::lock_guard<std::mutex> lock(NodeNamesWriteLock);
+    NodeNames[objectId] = name;
 }
 
 /****************************************/ REACT_IMPL_END /***************************************/

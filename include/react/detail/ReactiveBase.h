@@ -76,9 +76,10 @@ public:
         ptr_->SetWeightHint(weight);
     }
 
-protected:
+public:
     std::shared_ptr<TNode>  ptr_;
 
+protected:
     template <typename TNode_>
     friend const std::shared_ptr<TNode_>& GetNodePtr(const ReactiveBase<TNode_>& node);
 };
