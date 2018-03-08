@@ -16,6 +16,8 @@
 #include <functional>
 #include <iostream>
 #include <chrono>
+#include <unordered_map>
+#include <mutex>
 
 #include "tbb/concurrent_vector.h"
 
@@ -78,6 +80,8 @@ public:
     void    Write(std::ostream& out);
     void    Clear();
 
+    void    SetNodeName(const ObjectId, const std::string);
+
     template
     <
         typename TEventRecord,
@@ -89,10 +93,16 @@ public:
     }
 
 private:
+    using NameMappinggsT = std::unordered_map<ObjectId, std::string>;
     using LogEntriesT = tbb::concurrent_vector<Entry>;
 
     LogEntriesT     entries_;
     TimestampT      startTime_;
+    NameMappinggsT  NodeNames;
+    std::mutex      NodeNamesWriteLock;
+
+//    template <typename D>
+//    friend class ReactiveBase;
 };
 
 /****************************************/ REACT_IMPL_END /***************************************/

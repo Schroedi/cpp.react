@@ -46,6 +46,7 @@ class SeqNode : public IReactiveNode
 {
 public:
     int     Level       { 0 };
+    int     Consumers   { 0 };
     int     NewLevel    { 0 };
     bool    Queued      { false };
 
@@ -61,6 +62,7 @@ public:
     using InvalidateMutexT = spin_mutex;
 
     int             Level       { 0 };
+    int             Consumers   { 0 };
     int             NewLevel    { 0 };
     atomic<bool>    Collected   { false };
 

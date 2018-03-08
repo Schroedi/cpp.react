@@ -51,6 +51,10 @@ class Node : public IReactiveNode
 public:
     using ShiftMutexT = spin_rw_mutex;
 
+    inline void IncConsumers() { consumers_.fetch_add(1, std::memory_order_relaxed); }
+    inline bool DecConsumers() { return consumers_.fetch_sub(1, std::memory_order_relaxed) > 1; }
+    inline bool HasConsumers() { return consumers_.load() > 0; }
+
     inline bool IsQueued() const    { return flags_.Test<flag_queued>(); }
     inline void SetQueuedFlag()     { flags_.Set<flag_queued>(); }
     inline void ClearQueuedFlag()   { flags_.Clear<flag_queued>(); }
@@ -99,6 +103,7 @@ public:
     }
 
     NodeVector<Node>    Successors;
+    NodeVector<Node>    Precessors;
     ShiftMutexT         ShiftMutex;
     uint16_t            Level       = 0;
     uint16_t            NewLevel    = 0;
@@ -119,6 +124,7 @@ private:
     EnumFlags<EFlags>   flags_;
     atomic<uint16_t>    readyCount_     { 0 };
     atomic<bool>        shouldUpdate_   { false };
+    atomic<int>         consumers_    { 0 };
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

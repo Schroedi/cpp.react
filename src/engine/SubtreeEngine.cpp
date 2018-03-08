@@ -34,6 +34,25 @@ Turn::Turn(TurnIdT id, TransactionFlagsT flags) :
 void EngineBase::OnNodeAttach(Node& node, Node& parent)
 {
     parent.Successors.Add(node);
+    node.Precessors.Add(parent);
+
+    // mark the current branch as output?
+    if (node.IsOutputNode()) {
+        // this node also is a consumer itself
+        node.IncConsumers();
+
+        // all its parents need to be processed
+        using BufferT = NodeBuffer<Node,chunk_size>;
+        BufferT buffer(node.Precessors.begin(), node.Precessors.end());
+        while (! buffer.IsEmpty()) {
+            Node &node = *buffer.PopBack();
+            node.IncConsumers();
+            // this works as long as we have no cycles
+            for (auto parent : node.Precessors) {
+                buffer.PushBack(parent);
+            }
+        }
+    }
 
     if (node.Level <= parent.Level)
         node.Level = parent.Level + 1;
@@ -41,6 +60,20 @@ void EngineBase::OnNodeAttach(Node& node, Node& parent)
 
 void EngineBase::OnNodeDetach(Node& node, Node& parent)
 {
+    // un mark the current branch as output?
+    if (node.IsOutputNode()) {
+        // all its parents need to be processed
+        using BufferT = NodeBuffer<Node,chunk_size>;
+        BufferT buffer(node.Precessors.begin(), node.Precessors.end());
+        while (! buffer.IsEmpty()) {
+            Node &node = *buffer.PopBack();
+            node.DecConsumers();
+            // this works as long as we have no cycles
+            for (auto parent : node.Precessors) {
+                buffer.PushBack(parent);
+            }
+        }
+    }
     parent.Successors.Remove(node);
 }
 
@@ -107,7 +140,7 @@ public:
 
                 for (auto* succ : node.Successors)
                 {
-                    if (update)
+                    if (update && succ->HasConsumers())
                         succ->SetShouldUpdate(true);
 
                     // Wait for more?
@@ -171,7 +204,8 @@ void EngineBase::Propagate(Turn& turn)
             }
 
             curNode->ClearQueuedFlag();
-            curNode->Tick(&turn);
+            if (curNode->HasConsumers())
+                curNode->Tick(&turn);
         }
     }
 

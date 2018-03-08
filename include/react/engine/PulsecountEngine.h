@@ -66,6 +66,10 @@ class Node : public IReactiveNode
 public:
     using ShiftMutexT = spin_rw_mutex;
 
+    inline void IncConsumers() { consumers_.fetch_add(1, std::memory_order_relaxed); }
+    inline bool DecConsumers() { return consumers_.fetch_sub(1, std::memory_order_relaxed) > 1; }
+    inline bool HasConsumers() { return consumers_.load() > 0; }
+
     inline void IncCounter() { counter_.fetch_add(1, std::memory_order_relaxed); }
     inline bool DecCounter() { return counter_.fetch_sub(1, std::memory_order_relaxed) > 1; }
     inline void SetCounter(int c) { counter_.store(c, std::memory_order_relaxed); }
@@ -87,11 +91,13 @@ public:
 
     ShiftMutexT         ShiftMutex;
     NodeVector<Node>    Successors;
+    NodeVector<Node>    Precessors;
     
     ENodeState          State       = ENodeState::unchanged;
 
 private:
     atomic<int>         counter_    { 0 };
+    atomic<int>         consumers_    { 0 };
     atomic<ENodeMark>   mark_       { ENodeMark::unmarked };
 };
 
