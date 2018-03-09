@@ -120,16 +120,18 @@ public:
 
     using ReactorT = Reactor<D>;
 
-#ifdef REACT_ENABLE_LOGGING
     ///////////////////////////////////////////////////////////////////////////////////////////////
     /// Log
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
 public:
     static void SetNodeName(const NodeT& node, const std::string name) {
+#ifdef REACT_ENABLE_LOGGING
         Log().SetNodeName(GetObjectId(node), name);
+#endif
     }
 
+#ifdef REACT_ENABLE_LOGGING
     static EventLog& Log()
     {
         static EventLog instance;
