@@ -366,6 +366,9 @@ def stats(event):
     median_ms = [(nid, np.median(times) / 1000.0) for (nid, times) in nodetimes.items()]
     print([(get_name(nid), time) for (nid, time) in median_ms])
 
+    update = [(get_name(nid), ups) for (nid, ups) in nodeupdates.items()]
+    print(update)
+
 btnStats[0].on_clicked(stats)
 
 # color activity or time

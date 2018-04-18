@@ -5,6 +5,7 @@ lark-parser==0.5.4
 matplotlib==2.2.0
 networkx==2.1
 numpy==1.14.1
+pydot==1.2.4
 pyparsing==2.2.0
 python-dateutil==2.6.1
 pytz==2018.3
